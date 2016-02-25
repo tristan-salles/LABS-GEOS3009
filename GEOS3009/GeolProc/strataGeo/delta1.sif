@@ -1,0 +1,124 @@
+##############################################################
+#                      							STRATAFORM input file                                      #
+##############################################################
+#
+TITLE
+# One-line title / comment on experiment                  (required)
+  Delta formation over  1Ma using a static sea level  and single source
+#----------------------------------------------------------
+TIME
+# Time parameters                                         (required)
+# Simulation start time [years]   End time [years]
+        -1000000                  0
+#
+# Display interval [years]      Flow sampling interval [years]
+          10000                     500
+# Display interval decides how often the results files are updated
+# Flow sampling interval decides how often fluid elements are released from the source
+#------------------------------------------------------------------------
+GRID
+# Grid size definitions and geometry
+# Grid spacing [m]   Number of rows    Number of columns
+   1000.0                 21                 21
+# Lower left (SW) corner coordinates   Base level elevation
+         0.0        0.0                    0.0
+# Topography grid file name
+data/ramp_21x21.top
+#ramp_21x21_perturb.top
+#
+#---------------------------------------------------------
+SEDIMENTS
+# Sediment Parameters                                     (required)
+#
+# Line 1: Diameter of each grain size   [mm]
+# Line 2: Density of each grain size    [kg/m3]
+# Line 3: 1 - suspension (normal type),  0 - bed load
+#
+# pebble 4-64 mm, granule 2-4 mm, vcse 1-2 mm, cse 0.5-1 mm, med 0.25-0.5 mm,
+#  fn 0.125-0.25, vfn 0.062-0.125 mm, slt 0.0039-0.062 mm, clay < 0.0039 mm
+#
+#    Coarse      Medium        Fine    Finest
+      0.3          0.15       0.07        0.0004
+    2650.00       2650.00     2650.00     2650.00
+       1          1             1           1
+#---------------------------------------------------------
+SOURCES
+#
+# Definition of sources that are constant throughout the experiment (required)
+# One line per source, entries are:
+# Source location            (x,y)            [m]
+# Velocity at source         (vx,vy)          [m/sec]
+# Discharge rate             (Q)              [m3/sec]
+# Sediment concentration     (c)              [kg/m3]
+# Sediment composition       (C coarse,       [%]
+#                             M medium,
+#                             F fine,
+#                             FF finest)
+#
+# Source ID#   t1     t2    x       y     vx     vy     Q     c     %C  %M  %F %FF
+ 1      -1000000     0     10500  1500   0.0   0.01    22.0  0.007   20  40  40  0
+*
+######################################################################
+# Additional module parameters (modules will not run if not included)
+##################################################################
+#----------------------------------------------------------
+SOURCE HEIGHTS
+# list ends in '*'
+# flow types 0=normal 1=turbidite 2=debris flow
+# for debris flows the concentration must be high enough, otherwise will
+# transition to a turbidite (default transition at 60 kg/m3)
+#
+# source ID#  flow height(m)    flow type
+   1                  1.0             0
+*
+#----------------------------------------------------------
+SLOPE ANGLES
+# Define maximum slope per grain size     (optional)
+#
+#tg(1.0)=0.017; tg(2.0)=0.035
+#
+# a rough guide to appropriate slopes derived from deltas around the world:
+#  slope(deg)=0.4+0.5log(sand/shale ratio)
+#
+# Example slopes:
+# a. based on sand/shale ratio  for ratios 0.2-0.8 -  use Sabesi equation :
+#           slope (gradient) = tan(0.4 + 0.52 log(sand/shale ratio))
+# b. based on median grain size  -
+#      from Dean(1983) quoted in Olsen 1990 p.38 (NTH Diplom)
+#                h(x) = Ax^m
+# where :
+#               A =0.24 + 0.254*log(d50mm)
+#               m= 2/3
+# Modified by Griffiths (1993) to agree more closely with
+#   Short(1979)'s observations as below.
+#    (Short noted that 0.5mm+ gave 5-6deg, 0.25-0.5mm gave between 1.5-5.5,
+# and <0.25 mm gave less than 1.5deg)
+# Therefore to give a slope in degrees from a grain size
+#  between 0.1 and 50 mm use
+#         Slope(deg)  = atan(((0.28 + 0.23*log(d mm))*100^(2/3))/100)
+#or
+#         Slope(gradient)  = ((0.28+ 0.23*log(d mm))*100^(2/3))/100
+#
+# Max. slope of four grain sizes below sea level (dz/dx)
+# Max. slope of four grain sizes above sea level (dz/dx)
+# Max. slope of four reworked grain sizes below sea level (dz/dx)
+0.05  0.03  0.02  0.01
+0.0001  0.0001  0.0001  0.0001
+0.03   0.02   0.015   0.001
+# max slope carb/org grains below sea level (dz/dx) 4 grains
+# max slope carb/org grains above sea level (dz/dx) 4 grains
+0.005 0.004 0.005 0.004
+0.0001 0.0001 0.0001 0.0001
+# Minimum slope (dz/dx)
+# Slope module calling interval [years]
+0.0001
+ 500.0
+#------------------------------------------------------------------------
+VISUALISATION
+# Give the frequency at which you want to ouput the results :   (optional)
+#  for example: ->  1 every time intervals
+#  	        -> 10 each 10s time interval
+50
+# Is this an Underworld simulation? (0-no ; 1-yes)
+0
+#     *** End of example input file ***

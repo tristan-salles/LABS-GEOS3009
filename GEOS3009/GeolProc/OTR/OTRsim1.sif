@@ -1,0 +1,205 @@
+###############################################################
+#                      Required parameters section            #
+##############################################################
+TITLE
+# One-line title / comment on experiment                  (required)
+#
+  Simple simulation of carbonate platform development based on One Tree reef
+  profile.
+#
+#----------------------------------------------------------
+TIME
+# Time parameters                                         (required)
+#
+# Simulation start time [years]   End time [years]
+        -1000000                 1000000
+#
+# Display interval [years]      Flow sampling interval [years]
+          20000                     500
+# Display interval decides how often the results files are updated
+#------------------------------------------------------------------------
+GRID
+# Grid spacing [m]   Number of rows    Number of columns
+   150.0              55           9
+# Lower left (SW) corner coordinates   Base level elevation
+         0.0        -500.0                    0.0
+# Topography grid file name
+data/otr55x9.top
+#
+#---------------------------------------------------------
+SEDIMENTS
+# Sediment Parameters                                     (required)
+#
+# Line 1: Diameter of each grain size   [mm]
+# Line 2: Density of each grain size    [kg/m3]
+# Line 3: 1 - suspension (normal type),  0 - bed load
+#
+# pebble 4-64 mm, granule 2-4 mm, vcse 1-2 mm, cse 0.5-1 mm, med 0.25-0.5 mm,
+#  fn 0.125-0.25, vfn 0.062-0.125 mm, slt 0.0039-0.062 mm, clay < 0.0039 mm
+#
+#    Coarse      Medium        Fine    Finest
+      0.3          0.25       0.2        0.0004
+    2650.00       2650.00     2650.00     2650.00
+       1          1             1           1
+#-----------------------------------------------------------
+CARBONATES AND ORGANICS
+# Parameters for calculating carbonate development      (optional)
+# (It is strongly recommended that waves are turned on with this module)
+# calling interval (years)
+   100
+# carb/org grain size diameter (one for each grain) after comminution
+0.3 0.275 0.225 0.2
+# carb grain density (one for each grain)
+2050.00  2000.00 1830.0 1800.0
+# temperature and salinity file (this is a list of year, sea surface temperature[degrees C] and salinity [ppm])
+# to let the code interpolate between unknown values set them to -99 (warning: first value must always be defined)
+# eg 2005   27.0 30000
+#    2005.2 27.2 -99
+#    2005.7 30.0 30250 etc.
+#
+data/temp_static.tmprt
+#
+#-----------------------------------------------------------
+EXPERT CARBONATES AND ORGANICS
+#
+# Use this if the default settings of the carbonates need modifying.
+#
+# the format for defining membership functions is
+# function_name codevariable xpoint1 ypoint1 xpoint2 ypoint2 xpoint3 ypoint3 etc
+#
+# function_name - user defined variable name
+# code_variable - must be one of the key words
+#   OUTPUT VARIABLES
+#    growth - defines the function as a output membership function controlling carb/org growth rate [m/yr]
+#    erosion - defines the function as a output membership function controlling carbonate growth rate [m/yr]
+#    porosity - defines the function as a output membership function controlling the porosity [0 - 1]
+#    hardness - defines the function as a output membership function controlling the porosity [ >1 ]
+#  INPUT VARIABLES
+#    depth - water depth [m]
+#    current - current velocity in the area - you must have circulation turned on)[m/s]
+#    shore - distance in metres to the shoreline[m]
+#    rivdist - distance to the nearest fluid element or river source [m]
+#    sedrate - sediment rate  [m/year]
+#    temp - surface temperature[degrees celcius]
+#    expo - The value is calculated by ray tracing from eight different angles around the boundary
+#           of the simulation area. Where the ray is stopped when it encounters exposed land.
+#           Values vary between 0 and 1, with 0 being a completely land locked body of water (or land itself)
+#           through to 1 which would represent water completely exposed from all angles.
+#	expotime ñ time that the layer has been undisturbed on the surface [years]
+#    carbdist - distance to nearest surface exposed accumulation of carbonate1 [m]
+#	orgdist - distance to nearest surface exposed accumulation of organic1 or organic2 [metres]
+#    salinity - degree of salinity in the system (defined in a SALINITY section) [ppm]
+#    tidspd - maximum velocity of the tide (defined in a file in the TIDAL SPEED section) [m/s]
+#    valley - the normalise number of surrounding points uphill from the reference point
+#            (calclated from all grid points within two grid cells)
+#            -1 = all points downhill, 1 = all points uphill [-1,1]
+#    gradient - the average gradient of the point (calclated from all grid points within two grid cells)
+#               negative value indicates that most surrounding points are downhill from the point)
+#    grain1 - the percentage of the coarsest grain size in the top sediment layer (either basement or deposited material) [0-100]
+#    grain2 - the percentage of the second grain size in the top sediment layer (either basement or deposited material) [0-100]
+#    grain3 - the percentage of the third grain size in the top sediment layer (either basement or deposited material) [0-100]
+#    grain4 - the percentage of the finest grain size in the top sediment layer (either basement or deposited material) [0-100]
+#    carb1 - the percentage of the first carbonate type in the top sediment layer (either basement or deposited material) [0-100]
+#    carb2 - the percentage of the second carbonate type in the top sediment layer (either basement or deposited material) [0-100]
+#    org1 - the percentage of the first organic type in the top sediment layer (either basement or deposited material) [0-100]
+#    org2 - the percentage of the second organic type in the top sediment layer (either basement or deposited material) [0-100]
+# 	burial - depth to which the material has been buried by subsequent deposits [meters] (affects material subsurface)
+#	age - time since the layer was deposited [years] (affects material subsurface)
+#    time - current time [years]
+#
+# xpoint ypoint - coordinates describing the shape of the membership function. ypoint must be between 0 and 1.
+#     see below for examples
+#
+# membership functions
+# highexposure     expo      0.0   0.0      1.0   1.0
+# littlesed     sedrate   0.0005   1.0    0.001   0.0
+# vlittlesed    sedrate  0.00005   1.0   0.0001   0.0
+# shallow         depth      0.0   0.0      0.0   1.0    15.0  1.0    25.0 0.0
+# abovecarbcomp   depth      0.0   0.0      0.0   1.0  2000.0  1.0  5000.0 0.0
+# medtodepwat    depth      20.0   0.0     50.0   1.0    65.0  1.0   105.0 0.0
+# awayfromriver rivdist  10000.0   0.0  25000.0   1.0
+# warmtohot        temp     18.0   0.0     20.0   1.0    28.0  1.0  33.0  0.0
+# temptowarm       temp     12.0   0.0     14.0   1.0    20.0  1.0  22.0  0.0
+# fastcurrents  current      0.5   0.0      1.0   1.0
+# normsalin    salinity      0.0   0.0      3.3   1.0     3.5  1.0  3.6  0.0
+# farfromshore    shore    500.0   0.0   1000.0   1.0
+# closetoreef  carbdist      0.0   1.0     10.0   0.0
+# overburden     burial      0.0   0.0      0.1   1.0
+# residence        age        0    0.0       10   1.0
+#
+# slow_growth    growth      0.0   0.0   5.0e-4   1.0
+# v_slow_growth  growth      0.0   0.0   4.0e-5   1.0
+# quick_erosion erosion      0.0   0.0   4.0e-5   1.0
+# slowdiagen   porosity      0.2   1.0      1.0   0.0
+# fastdiagen   porosity      0.1   1.0      0.9   0.0
+# hardening    hardness      10    0.0     1000   1.0
+# *
+#
+# the format for defining fuzzy rules is
+# car/org_type = output_function_name = input_function_name1 and input_function_name2 and etc
+# carb/org_type - must be one of "carbonate1", "carbonate2","organic1" or "organic2"
+# output_function_name - must be one of the output functions defined earlier (with code_variable "growth")
+# input_function_name - must be one of the functions defined earlier (without the code_variable "growth")
+# rules
+# carbonate1    = slow_growth  = temptowarm  and shallow
+# carbonate1    = slowdiagen  = longexposure
+# carbonate1    = fastdiagen  = overburden
+#
+# carbonate2    = v_slow_growth  = warmtohot and shallow and closetoreef
+# carbonate2    = slowdiagen  = longexposure
+# carbonate2    = fastdiagen  = overburden
+#
+# siliciclast   = fastdiagen  = overburden
+#
+# organic2      = slow_growth   = warmtohot  and awayfromriver and vlittlesed and highexposure and shallow
+# organic1      = slow_growth   = temptowarm and awayfromriver and shallow
+# *
+#
+#
+# membership functions
+shallow         depth      0.0   0.1      0.0   1.0    3.5  1.0    7. 0.0
+medwat         depth      4.   0.0     6.0   1.0    10.0  1.0   12.0 0.0
+deepwat         depth      10.0   0.0     14.0   1.0    17.0  1.0   50.0 0.0
+abovesealevel   depth      0.0   1.0     0.0 0.
+belowsealevel   depth      0.0   0.0      0.1   1.0
+temperate        temp     18.0   0.0     20.0   1.0    23.0  1.0  25.0  0.0
+fartoreef  carbdist      0.0   0.0     100.0   1.0
+#
+slow_growth    growth      0.0   0.0   2.0e-5   1.0
+v_slow_growth  growth      0.0   0.0   1.0e-5   1.0
+vv_slow_growth  growth     0.0   0.0  9.0e-6   1.0
+vvv_slow_growth  growth     0.0   0.0  5.0e-7   1.0
+erosion1  erosion      0.0   0.0   8.0e-6   1.0
+erosion2  erosion      0.0   0.0   3.0e-7   1.0
+erosion3  erosion      0.0   0.0   6.0e-7   1.0
+*
+# rules and highexposure
+carbonate1    = slow_growth  = temperate  and shallow
+carbonate1    = vvv_slow_growth  = temperate  and medwat
+carbonate1    = erosion1 = abovesealevel
+#
+carbonate2    = vvv_slow_growth  = temperate and shallow
+carbonate2    = v_slow_growth  = temperate and medwat
+carbonate2    = erosion2 = abovesealevel
+#
+organic1      = vv_slow_growth  = deepwat and temperate
+organic2      = vvv_slow_growth  = belowsealevel
+organic2      = erosion3  = fartoreef
+#
+*
+#----------------------------------------------------------
+#SEA LEVEL
+# Define sea level curve        (optional)
+#
+# Sea level curve file
+data/sea2.sl
+#
+#------------------------------------------------------------------------
+VISUALISATION
+# Give the frequency at which you want to ouput the results :   (optional)
+#  for example: ->  1 every time intervals
+#  	        -> 10 each 10s time interval
+100
+# Is this an Underworld simulation? (0-no ; 1-yes)
+0
+#     *** End of example input file ***
