@@ -58,9 +58,6 @@ RUN mkdir /workspace && \
 RUN echo "!!!" && git clone https://github.com/tristan-salles/LABS-GEOS3009.git /geos_course/ && \
     mv /geos_course/GEOS3009/* /workspace
 
-# Copy local directory to image
-COPY GEOS3009 /workspace
-
 # expose notebook port
 EXPOSE 8888
 
