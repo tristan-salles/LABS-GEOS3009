@@ -2,10 +2,13 @@ import os
 from vtk import *
 import numpy as np
 import pandas as pd
+import numpy.ma as ma
+
 import matplotlib
 import matplotlib.mlab as ml
 import matplotlib.pyplot as plt
 from matplotlib.mlab import griddata
+from scipy.interpolate import griddata as scipygrid
 from vtk.util.numpy_support import vtk_to_numpy
 
 import warnings
@@ -256,7 +259,7 @@ def getXmgz(Xsec,zi,xi,mzi,nlays,yID,mgzExtent):
 
     return mgzi2,zi2
 
-def getYmgz(Ysec,zi,yi,mzi,nlays,xID,mgzExtent):
+def oldgetYmgz(Ysec,zi,yi,mzi,nlays,xID,mgzExtent):
 
     yy = np.zeros(mzi.shape[0]*mzi.shape[2])
     zz = np.zeros(mzi.shape[0]*mzi.shape[2])
@@ -283,6 +286,38 @@ def getYmgz(Ysec,zi,yi,mzi,nlays,xID,mgzExtent):
                 mgzi2.mask[i,j] = True
 
     return mgzi2,zi2
+
+
+def getYmgz(Ysec,zi,yi,mzi,nlays,xID,mgzExtent):
+
+    yy = np.zeros(mzi.shape[0]*mzi.shape[2])
+    zz = np.zeros(mzi.shape[0]*mzi.shape[2])
+    mgzz = np.zeros(mzi.shape[0]*mzi.shape[2])
+    k = 0
+    for l in range(0,nlays):
+        for i in range(mzi.shape[0]):
+            yy[k] = yi[i,xID]
+            zz[k] = zi[i,xID,l]
+            mgzz[k] = mzi[i,xID,l]
+            k += 1
+
+    # define grid.
+    zi2 = np.linspace(mgzExtent[0],mgzExtent[1],mgzExtent[2])
+ 
+    # grid the data.
+    mgzi2 = scipygrid((yy, zz), mgzz, (Ysec[None,:], zi2[:,None]), method='nearest')
+    mask = np.zeros((len(zi2),len(Ysec)),dtype=int)
+    # Mask points above top surface
+    for j in range(len(Ysec)):
+        for i in range(len(zi2)):
+            if zi2[i] > zi[j,xID,nlays-1]+0.5:
+                mask[i,j] = 1
+            if zi2[i] < zi[j,xID,0]-0.5:
+                mask[i,j] = 1
+
+    mmgzi2 = ma.masked_array(mgzi2, mask=mask)          
+    
+    return mmgzi2,zi2
 
 def plotXtime(figS,Xsec,zi,yID,base,minBase,sl,nlays,layplot,xlim,ylim):
 
